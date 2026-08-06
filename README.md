@@ -329,6 +329,17 @@ node node-server.js
 
 Then open `http://localhost:3000` and `http://localhost:3000/api`. The example also includes `GET`, `POST`, and `DELETE /api/session` to demonstrate cookie sessions.
 
+## Tests
+
+Run the feature test suite with Node, and with Bun when available:
+
+```bash
+npm test
+npm run test:bun
+```
+
+The suite covers routing, contexts, hooks, responses, errors, sessions, flash messages, EJS rendering, static files, and platform adapters.
+
 ## EJS views
 
 Jinatra can render EJS templates from a conventional `views/` directory when self-hosted with Bun or Node. EJS support is isolated behind the `@telga/jinatra/ejs` export so the routing core stays runtime-neutral.
