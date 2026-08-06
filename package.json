@@ -12,8 +12,10 @@
   },
   "files": [
     "src",
+    "examples",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "wrangler.example.jsonc"
   ],
   "scripts": {
     "check": "node --check src/app.js && node --check src/index.js && node --check src/adapters-common.js && node --check src/adapters/node.js && node --check src/adapters/bun.js && node --check src/adapters/cloudflare.js && node --check examples/example.js && node --check examples/cloudflare-worker.js && node --check examples/node-server.js && node --check examples/bun-server.js && node --check src/ejs.js && node --check examples/ejs-server.js && node --check test.js",

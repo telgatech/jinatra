@@ -11,7 +11,7 @@ app.before((c) => {
   c.state.startedAt = performance.now();
 });
 
-app.get('/api', (c) => c.json({ name: 'Jinatra', version: '0.2.0' }));
+app.get('/api', (c) => c.json({ name: 'Jinatra', version: '0.1.0' }));
 
 app.get('/api/hello/:name', (c) => {
   return c.json({

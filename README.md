@@ -455,7 +455,6 @@ Runtime filesystem rendering is intentionally a self-host feature. Cloudflare Wo
 - Core routing is built only on Web Standards.
 - Runtime and platform integrations stay in adapters.
 - Small enough to read and understand completely.
-- No database, template engine, or hosting-provider assumptions.
 
 ## License
 
