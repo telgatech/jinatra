@@ -1,6 +1,6 @@
 {
   "name": "@telga/jinatra",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A tiny self-host-first Sinatra-style web framework built on Web Standards",
   "type": "module",
   "exports": {
