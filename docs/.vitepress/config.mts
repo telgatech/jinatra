@@ -17,7 +17,7 @@ export default defineConfig({
       { text: 'Guide', link: '/guide/getting-started' },
       { text: 'API', link: '/api' },
       { text: 'Examples', link: '/examples' },
-      { text: 'GitHub', link: 'https://github.com/u89012/jinatra' },
+      { text: 'GitHub', link: 'https://github.com/telgatech/jinatra' },
     ],
     sidebar: {
       '/guide/': [
@@ -50,11 +50,11 @@ export default defineConfig({
     },
     outline: 'deep',
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/u89012/jinatra' },
+      { icon: 'github', link: 'https://github.com/telgatech/jinatra' },
     ],
     search: { provider: 'local' },
     editLink: {
-      pattern: 'https://github.com/u89012/jinatra/edit/main/docs/:path',
+      pattern: 'https://github.com/telgatech/jinatra/edit/main/docs/:path',
     },
     footer: {
       message: 'Released under the MIT License.',

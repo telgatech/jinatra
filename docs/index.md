@@ -10,7 +10,7 @@ hero:
       link: /guide/getting-started
     - theme: alt
       text: View on GitHub
-      link: https://github.com/u89012/jinatra
+      link: https://github.com/telgatech/jinatra
 features:
   - icon: "⚡"
     title: Fetch-native
