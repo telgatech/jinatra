@@ -19,7 +19,7 @@ Jinatra requires Node 18 or a runtime with the Fetch API. Bun is the shortest pa
 Create `server.js`:
 
 ```js
-import { app, get } from 'jinatra'
+import { app } from 'jinatra'
 import { serve } from 'jinatra/bun'
 
 get('/', () => 'Hello from Jinatra')
@@ -37,9 +37,13 @@ bun run server.js
 
 Open `http://localhost:3000` in your browser.
 
+::: tip Global route verbs
+Importing `jinatra` installs the default app's route verbs (`get`, `post`, `put`, and so on) and request helpers on `globalThis`. They can be used without importing each one. Explicit named imports are also supported when you prefer them.
+:::
+
 ## Use an explicit app
 
-The default export is convenient for a single application. For tests, libraries, or multiple apps, create an instance explicitly:
+The default app is convenient for a single application. For tests, libraries, or multiple apps, create an instance explicitly. An explicit instance keeps its routes separate, so use its methods directly:
 
 ```js
 import { Jinatra } from 'jinatra'

@@ -7,7 +7,7 @@ The repository includes runnable examples for the main deployment targets.
 [`examples/minimal.tsx`](https://github.com/u89012/jinatra/blob/main/examples/minimal.tsx) shows the shortest path to a JSX app running on Bun.
 
 ```tsx
-import { app, get, params } from 'jinatra'
+import { app } from 'jinatra'
 import { serve } from 'jinatra/bun'
 
 get('/', () => <h1>Jinatra</h1>)

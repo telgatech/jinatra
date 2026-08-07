@@ -33,7 +33,7 @@ features:
     <div class="home-code">
       <div class="home-code-bar"><span></span><span></span><span></span></div>
       <div class="home-code-body">
-        <div class="home-code-line"><span class="keyword">import</span> { app, get, params } <span class="keyword">from</span> <span class="string">'jinatra'</span></div>
+        <div class="home-code-line"><span class="keyword">import</span> { app } <span class="keyword">from</span> <span class="string">'jinatra'</span></div>
         <div class="home-code-line"><span class="keyword">import</span> { serve } <span class="keyword">from</span> <span class="string">'jinatra/bun'</span></div>
         <div class="home-code-line">&nbsp;</div>
         <div class="home-code-line"><span class="accent">get</span>(<span class="string">'/hello/:name'</span>, () =&gt; <span class="muted">'Hello ' + params.name</span>)</div>
@@ -45,7 +45,7 @@ features:
 </div>
 
 ```js
-import { app, get, params } from 'jinatra'
+import { app } from 'jinatra'
 import { serve } from 'jinatra/bun'
 
 get('/hello/:name', () => 'Hello ' + params.name)

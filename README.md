@@ -30,7 +30,7 @@ Configure automatic JSX in `tsconfig.json`:
 }
 ```
 
-The package exports `jsx-runtime` and `jsx-dev-runtime`; JSX is rendered on the server and never hydrated. A JSX value becomes escaped `text/html`, strings become `text/plain`, objects become JSON, and `Response` values pass through unchanged.
+Importing the root package also exposes the default app's route verbs and request helpers on `globalThis`, so `get`, `post`, `params`, and `json` can be used without importing each one. Explicit named imports remain available. The package exports `jsx-runtime` and `jsx-dev-runtime`; JSX is rendered on the server and never hydrated. A JSX value becomes escaped `text/html`, strings become `text/plain`, objects become JSON, and `Response` values pass through unchanged.
 
 ## Routing and helpers
 

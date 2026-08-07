@@ -25,8 +25,6 @@ app.get('/files/*', (c) => c.param('wildcard'))
 The `params` helper provides the same values without passing a context around:
 
 ```js
-import { params } from 'jinatra'
-
 app.get('/users/:id', () => ({ id: params.id }))
 ```
 

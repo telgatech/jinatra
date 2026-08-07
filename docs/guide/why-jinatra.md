@@ -5,7 +5,7 @@ Jinatra is for small web applications that should feel like a few clear function
 ## The shape of the API
 
 ```js
-import { app, get, params } from 'jinatra'
+import { app } from 'jinatra'
 import { serve } from 'jinatra/bun'
 
 get('/hello/:name', () => `Hello, ${params.name}!`)
