@@ -1,4 +1,4 @@
-import { serve } from '@telga/jinatra/bun';
+import { serve } from 'jinatra/bun';
 import app from './example.js';
 
 const server = serve(app, {

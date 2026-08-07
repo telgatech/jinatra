@@ -1,4 +1,4 @@
-import { serve } from '@telga/jinatra/node';
+import { serve } from 'jinatra/node';
 import app from './example.js';
 
 serve(app, {

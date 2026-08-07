@@ -147,6 +147,8 @@ async function fileStat(pathname) {
   }
 }
 
+export const listen = serve;
+
 function normalizeRenderer(views) {
   if (!views) return null;
   if (typeof views === 'function') return views;

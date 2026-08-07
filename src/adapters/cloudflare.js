@@ -9,8 +9,8 @@ export function withAssets(app, options = {}) {
 
   const binding = options.binding ?? 'ASSETS';
   const methods = new Set(options.methods ?? ['GET', 'HEAD']);
-
-  return {
+  const worker = typeof app.worker === 'function' ? app.worker() : app;
+  const result = {
     async fetch(request, env = {}, ctx = {}) {
       const response = await app.fetch(request, env, ctx);
       if (response.status !== 404 || !methods.has(request.method)) return response;
@@ -20,4 +20,6 @@ export function withAssets(app, options = {}) {
       return assets.fetch(request);
     },
   };
+  if (typeof worker.scheduled === 'function') result.scheduled = worker.scheduled;
+  return result;
 }

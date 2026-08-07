@@ -1,4 +1,4 @@
-import { Jinatra } from '@telga/jinatra';
+import { Jinatra } from 'jinatra';
 
 export const app = new Jinatra({
   session: {

@@ -5,7 +5,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { Jinatra } from './src/index.js';
-import { createEjsRenderer } from './src/ejs.js';
+import { Fragment, jsx, jsxs, render } from './src/jsx/render.js';
+import { params, query, json, redirect } from './src/index.js';
 import { withAssets } from './src/adapters/cloudflare.js';
 import { serve as serveNode } from './src/adapters/node.js';
 import { serve as serveBun } from './src/adapters/bun.js';
@@ -16,7 +17,8 @@ const tests = [
   ['errors and 404 handling', testErrors],
   ['cookie sessions and flash messages', testSessions],
   ['Cloudflare assets adapter', testCloudflareAssets],
-  ['EJS rendering', testEjs],
+  ['Cloudflare Worker exports and cron', testWorkerExports],
+  ['JSX SSR and escaping', testJsx],
   ['Node adapter and static files', testNodeAdapter],
 ];
 
@@ -204,22 +206,42 @@ async function testCloudflareAssets() {
   assert.equal(post.status, 404);
 }
 
-async function testEjs() {
-  const directory = await mkdtemp(join(tmpdir(), 'jinatra-ejs-'));
-  try {
-    await writeFile(join(directory, 'layout.ejs'), '<main><%- body %></main>');
-    await writeFile(join(directory, 'home.ejs'), '<h1><%= title %></h1><p><%= message %></p>');
+async function testWorkerExports() {
+  const plain = new Jinatra();
+  plain.get('/', () => 'worker');
+  const plainWorker = plain.worker();
+  assert.deepEqual(Object.keys(plainWorker), ['fetch']);
+  assert.equal(await (await plainWorker.fetch(new Request('https://example.test/'))).text(), 'worker');
 
-    const render = createEjsRenderer({ directory, layout: 'layout' });
-    const html = await render('home', { title: 'Welcome', message: 'Hello' });
-    assert.equal(html, '<main><h1>Welcome</h1><p>Hello</p></main>');
+  const calls = [];
+  const app = new Jinatra();
+  app.cron('0 * * * *', async (controller, env, ctx) => {
+    calls.push([controller.cron, env.name, ctx.name]);
+  });
+  app.cron('0 0 * * *', () => calls.push(['other']));
+  const worker = app.worker();
+  assert.equal(typeof worker.scheduled, 'function');
+  await worker.scheduled({ cron: '0 * * * *' }, { name: 'env' }, { name: 'ctx' });
+  await worker.scheduled({ cron: '15 * * * *' }, {}, {});
+  assert.deepEqual(calls, [['0 * * * *', 'env', 'ctx']]);
 
-    const withoutLayout = await render('home', { title: 'Welcome', message: 'Hello' }, { layout: false });
-    assert.equal(withoutLayout, '<h1>Welcome</h1><p>Hello</p>');
-    await assert.rejects(() => render('../outside'), /escapes views directory/);
-  } finally {
-    await rm(directory, { recursive: true, force: true });
-  }
+  const wrapped = withAssets(app);
+  assert.equal(typeof wrapped.scheduled, 'function');
+}
+
+async function testJsx() {
+  const Layout = ({ title, children }) => jsxs('html', {
+    children: [jsx('head', { children: jsx('title', { children: title }) }), jsx('body', { children })],
+  });
+  const app = new Jinatra();
+  app.get('/', () => jsx(Layout, {
+    title: '<Home>',
+    children: jsxs(Fragment, { children: [jsx('h1', { className: 'title', children: 'Hello & bye' }), null, false, jsx('input', { disabled: true })] }),
+  }));
+  const response = await app.fetch(new Request('https://example.test/'));
+  assert.equal(await response.text(), '<html><head><title>&lt;Home&gt;</title></head><body><h1 class="title">Hello &amp; bye</h1><input disabled></body></html>');
+  assert.equal(response.headers.get('content-type'), 'text/html; charset=utf-8');
+  assert.equal(await render(jsx('div', { style: { backgroundColor: 'red' }, children: '<x>' })), '<div style="background-color:red">&lt;x&gt;</div>');
 }
 
 async function testBunAdapter() {
