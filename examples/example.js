@@ -11,18 +11,19 @@ app.before((c) => {
   c.state.startedAt = performance.now();
 });
 
-app.get('/api', (c) => c.json({ name: 'Jinatra', version: '0.1.0' }));
+app.get('/api', () => ({ name: 'Jinatra', version: '0.1.0' }));
 
-app.get('/api/hello/:name', (c) => {
-  return c.json({
-    message: `Hello, ${c.param('name')}!`,
-    query: c.query(),
-  });
+app.get('/api/hello/:name', (c) => ({
+  message: `Hello, ${c.param('name')}!`,
+  query: c.query(),
+}));
+
+app.post('/api/echo', async (c) => {
+  c.status(201);
+  return { body: await c.body() };
 });
 
-app.post('/api/echo', async (c) => c.json({ body: await c.body() }, 201));
-
-app.get('/api/session', (c) => c.json({
+app.get('/api/session', (c) => ({
   userId: c.session.get('userId') ?? null,
   notice: c.flash('notice') ?? null,
 }));
@@ -30,12 +31,12 @@ app.get('/api/session', (c) => c.json({
 app.post('/api/session', (c) => {
   c.session.set('userId', c.query('userId') ?? 'demo');
   c.flash('notice', 'Session updated');
-  return c.json({ userId: c.session.get('userId') });
+  return { userId: c.session.get('userId') };
 });
 
 app.delete('/api/session', (c) => {
   c.session.clear();
-  return c.json({ ok: true });
+  return { ok: true };
 });
 
 app.after((c, response) => {

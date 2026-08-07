@@ -18,12 +18,15 @@ app.get('/native', () => new Response('ok', { status: 202 }))
 
 ## Response helpers
 
-Use helpers when you need status codes or headers:
+Return an object for ordinary JSON responses. Use helpers when you need custom status codes, headers, HTML, or redirects:
 
 ```js
-import { html, json, redirect, text } from 'jinatra'
+import { html, redirect, status, text } from 'jinatra'
 
-app.get('/created', () => json({ created: true }, 201))
+app.get('/created', () => {
+  status(201)
+  return { created: true }
+})
 app.get('/page', () => html('<h1>Trusted HTML</h1>'))
 app.get('/download', () => text('file contents', 200, {
   'content-disposition': 'attachment; filename="file.txt"',
@@ -47,7 +50,7 @@ app.post('/users', async () => {
 })
 ```
 
-A handler can also use `c.status(201)`, `c.html()`, `c.json()`, `c.text()`, or `c.redirect()`.
+A handler can also use `c.status(201)`, `c.html()`, `c.json()`, `c.text()`, or `c.redirect()`. The `json()` response helper is available when you need to construct an explicit `Response`, but returning an object is the normal pattern.
 
 ## Errors
 

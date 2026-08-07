@@ -39,13 +39,15 @@ Hooks can be chained. Route-specific hooks are available with `beforeRoute()` an
 ## Custom not-found and error handlers
 
 ```js
-import { json } from 'jinatra'
+app.notFound((c) => {
+  c.status(404)
+  return { error: 'not found', path: c.url.pathname }
+})
 
-app.notFound((c) => json({ error: 'not found', path: c.url.pathname }, 404))
-
-app.onError((error) => {
+app.onError((error, c) => {
   console.error(error)
-  return json({ error: 'internal server error' }, 500)
+  c.status(500)
+  return { error: 'internal server error' }
 })
 ```
 

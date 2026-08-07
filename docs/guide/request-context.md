@@ -39,6 +39,55 @@ await c.form()
 
 The body parser selects JSON, form data, or text from the request content type. `c.jsonBody()` always parses JSON, while `c.form()` always parses form data.
 
+## JSON request bodies
+
+`c.req.json()` returns the parsed JavaScript value. Do not call `JSON.parse()` again:
+
+```js
+app.post('/users', async (c) => {
+  const input = await c.req.json()
+  // input is already an object, array, string, number, boolean, or null
+  return { received: input }
+})
+```
+
+These are equivalent JSON parsing forms:
+
+```js
+await c.req.json()
+await c.jsonBody()
+await body() // when Content-Type is application/json
+await json() // the no-argument request helper
+```
+
+The request must have an `application/json` content type for automatic body parsing. Invalid JSON throws and is handled by the app error handler.
+
+## File uploads
+
+`multipart/form-data` is parsed with the platform's native `FormData` API:
+
+```js
+app.post('/upload', async (c) => {
+  const form = await c.req.formData()
+  const title = form.get('title')
+  const file = form.get('file')
+
+  if (!(file instanceof File)) return c.text('file is required', 400)
+
+  const bytes = await file.arrayBuffer()
+  console.log(file.name, file.type, bytes.byteLength)
+
+  return {
+    title,
+    filename: file.name,
+    size: file.size,
+    type: file.type,
+  }
+})
+```
+
+For a convenient object of fields, use `c.form()` or `body()`. Use `c.req.formData()` when you need repeated fields, `File` values, or the full `FormData` API. When sending a `FormData` object from the browser, do not set `Content-Type` manually; the browser adds the multipart boundary.
+
 ## Request helpers
 
 For Bun and Node, AsyncLocalStorage makes concise helpers safe across `await` boundaries:

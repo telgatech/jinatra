@@ -47,7 +47,7 @@ The root package exports request-scoped helpers:
 - `query`
 - `body()`
 - `form()`
-- `json()`
+- `json()` (request-body parser when called without arguments)
 - `headers`
 - `cookies`
 - `request()`
@@ -60,7 +60,7 @@ Property access and calls are both supported for parameter, query, header, and c
 ## Response helpers
 
 - `html(value, status?, headers?)`
-- `json(value, status?, headers?)`
+- `json(value, status?, headers?)` (explicit JSON `Response`; ordinary objects can be returned directly)
 - `text(value, status?, headers?)`
 - `redirect(location, status?)`
 - `raw(value)`

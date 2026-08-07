@@ -15,6 +15,6 @@ get('/', () => (
 
 get('/hello/:name', () => <h1>Hello {params.name}</h1>);
 
-post('/echo', async () => ({ body: await json() }));
+post('/echo', async () => ({ body: await body() }));
 
 serve(app, { port: 3000 });

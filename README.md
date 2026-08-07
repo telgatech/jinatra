@@ -14,7 +14,7 @@ get("/", () => <Layout><h1>Jinatra</h1></Layout>);
 
 get("/hello/:name", () => <h1>Hello {params.name}</h1>);
 
-post("/echo", async () => ({ body: await json() }));
+post("/echo", async () => ({ body: await body() }));
 
 serve(app, { port: 3000 });
 ```
@@ -30,7 +30,7 @@ Configure automatic JSX in `tsconfig.json`:
 }
 ```
 
-Importing the root package also exposes the default app's route verbs and request helpers on `globalThis`, so `get`, `post`, `params`, and `json` can be used without importing each one. Explicit named imports remain available. The package exports `jsx-runtime` and `jsx-dev-runtime`; JSX is rendered on the server and never hydrated. A JSX value becomes escaped `text/html`, strings become `text/plain`, objects become JSON, and `Response` values pass through unchanged.
+Importing the root package also exposes the default app's route verbs and request helpers on `globalThis`, so `get`, `post`, `params`, and `body` can be used without importing each one. Returning an object automatically creates a JSON response; `json()` is mainly the request-body parser when called without arguments. Explicit named imports remain available. The package exports `jsx-runtime` and `jsx-dev-runtime`; JSX is rendered on the server and never hydrated. A JSX value becomes escaped `text/html`, strings become `text/plain`, objects become JSON, and `Response` values pass through unchanged.
 
 ## Routing and helpers
 
@@ -66,8 +66,14 @@ app.use(async (c, next) => {
 });
 
 app.get('/private', requireAuth, handler);
-app.notFound(() => json({ error: 'missing' }, 404));
-app.onError((error) => json({ error: error.message }, 500));
+app.notFound((c) => {
+  c.status(404);
+  return { error: 'missing' };
+});
+app.onError((error, c) => {
+  c.status(500);
+  return { error: error.message };
+});
 app.static('./public');
 
 import { serve } from 'jinatra/bun';
