@@ -1,6 +1,6 @@
 {
   "name": "jinatra",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A tiny Fetch-native web framework with JSX SSR",
   "type": "module",
   "exports": {
@@ -11,7 +11,13 @@
     "./jsx-runtime": "./src/jsx/jsx-runtime.js",
     "./jsx-dev-runtime": "./src/jsx/jsx-dev-runtime.js"
   },
-  "files": ["src", "examples", "README.md", "LICENSE", "wrangler.example.jsonc"],
+  "files": [
+    "src",
+    "examples",
+    "README.md",
+    "LICENSE",
+    "wrangler.example.jsonc"
+  ],
   "scripts": {
     "check": "node --check src/app.js && node --check src/index.js && node --check src/request-context.js && node --check src/response.js && node --check src/jsx/render.js && node --check src/jsx/jsx-runtime.js && node --check src/jsx/jsx-dev-runtime.js && node --check src/adapters/node.js && node --check src/adapters/bun.js && node --check src/adapters/cloudflare.js && node --check examples/example.js && node --check examples/cloudflare-worker.js && node --check examples/node-server.js && node --check examples/bun-server.js && node --check test.js",
     "test": "node test.js",
@@ -23,8 +29,20 @@
   "devDependencies": {
     "vitepress": "^1.6.4"
   },
-  "keywords": ["router", "sinatra", "web-framework", "fetch", "bun", "jsx", "ssr"],
+  "keywords": [
+    "router",
+    "sinatra",
+    "web-framework",
+    "fetch",
+    "bun",
+    "jsx",
+    "ssr"
+  ],
   "license": "MIT",
-  "publishConfig": { "access": "public" },
-  "engines": { "node": ">=18" }
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  }
 }

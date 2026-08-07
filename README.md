@@ -106,7 +106,7 @@ app.get('/', () => 'Hello from a Worker');
 export default { fetch: app.fetch };
 ```
 
-Use `worker()` when the application has Cron handlers. The `scheduled` export is omitted when there are no Cron handlers:
+Use `worker()` when the application has Cron or Queue handlers. The `scheduled` and `queue` exports are omitted when there are no corresponding handlers:
 
 ```js
 const app = new Jinatra();
@@ -118,7 +118,15 @@ app.cron('0 * * * *', async (controller, env, ctx) => {
 export default app.worker();
 ```
 
-`scheduled()` compares `controller.cron` with the expression registered by `app.cron()` and dispatches only the matching handler. Cron Trigger expressions remain deployment configuration in `wrangler.toml` or `wrangler.jsonc`; Jinatra only maps those expressions to application code. `withAssets()` preserves the scheduled export when adding a Workers Static Assets fallback.
+`scheduled()` compares `controller.cron` with the expression registered by `app.cron()` and dispatches only the matching handler. Queue consumers are registered by name and receive each message from Cloudflare's batch:
+
+```js
+app.queue('jobs', async (message, env, ctx) => {
+  await processJob(message.body, env)
+})
+```
+
+Queue producers, R2 buckets, D1 databases, and KV namespaces remain ordinary bindings on `env`. Cron expressions and queue consumer configuration remain deployment configuration in `wrangler.toml` or `wrangler.jsonc`; Jinatra only maps events to application code. `withAssets()` preserves the scheduled and queue exports when adding a Workers Static Assets fallback.
 
 Other Fetch runtimes can use `app.fetch(request)` directly. The included Node adapter is a small compatibility adapter; the built-in server path is Bun's `Bun.serve()`.
 

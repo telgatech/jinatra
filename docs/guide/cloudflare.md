@@ -57,3 +57,26 @@ export default app.worker()
 ```
 
 `worker()` returns a module export with `fetch` and, when cron handlers exist, `scheduled`. `withAssets()` preserves the scheduled export.
+
+## Queue consumers
+
+Register a handler for the Cloudflare queue name. Jinatra invokes it once for each message in the incoming batch:
+
+```js
+const app = new Jinatra()
+
+app.queue('jobs', async (message, env, ctx) => {
+  const job = message.body
+  await processJob(job, env)
+})
+
+export default app.worker()
+```
+
+The handler receives Cloudflare's message object, so `message.body`, `message.id`, `message.attempts`, `message.ack()`, and `message.retry()` remain available. Queue producer bindings are ordinary environment bindings:
+
+```js
+await env.JOBS.send({ type: 'send-email', userId: 123 })
+```
+
+Configure the queue consumer and producer binding in Wrangler. Jinatra only dispatches the `queue(batch, env, ctx)` event; it does not manage queue infrastructure.

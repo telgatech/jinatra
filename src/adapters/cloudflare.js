@@ -21,5 +21,6 @@ export function withAssets(app, options = {}) {
     },
   };
   if (typeof worker.scheduled === 'function') result.scheduled = worker.scheduled;
+  if (typeof worker.queue === 'function') result.queue = worker.queue;
   return result;
 }

@@ -30,6 +30,7 @@ Methods:
 - `static(directory, options?)`
 - `session(options)`
 - `cron(expression, ...handlers)`
+- `queue(name, ...handlers)`
 - `worker()`
 - `fetch(request, env?, executionContext?)`
 
@@ -77,5 +78,7 @@ Property access and calls are both supported for parameter, query, header, and c
 | `jinatra/bun` | `serve()` and `listen()` for Bun |
 | `jinatra/node` | `serve()` and `listen()` for Node |
 | `jinatra/cloudflare` | `withAssets()` for Workers Static Assets |
+
+`worker()` always includes `fetch` and adds `scheduled` and/or `queue` only when the app has registered corresponding handlers.
 | `jinatra/jsx-runtime` | Automatic JSX runtime |
 | `jinatra/jsx-dev-runtime` | Development JSX runtime |

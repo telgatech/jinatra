@@ -214,19 +214,33 @@ async function testWorkerExports() {
   assert.equal(await (await plainWorker.fetch(new Request('https://example.test/'))).text(), 'worker');
 
   const calls = [];
+  const queueCalls = [];
   const app = new Jinatra();
   app.cron('0 * * * *', async (controller, env, ctx) => {
     calls.push([controller.cron, env.name, ctx.name]);
   });
   app.cron('0 0 * * *', () => calls.push(['other']));
+  app.queue('jobs', async (message, env, ctx) => {
+    queueCalls.push([message.body, env.name, ctx.name]);
+  });
   const worker = app.worker();
   assert.equal(typeof worker.scheduled, 'function');
+  assert.equal(typeof worker.queue, 'function');
   await worker.scheduled({ cron: '0 * * * *' }, { name: 'env' }, { name: 'ctx' });
   await worker.scheduled({ cron: '15 * * * *' }, {}, {});
   assert.deepEqual(calls, [['0 * * * *', 'env', 'ctx']]);
+  await worker.queue({
+    queue: 'jobs',
+    messages: [{ body: { id: 1 } }, { body: { id: 2 } }],
+  }, { name: 'env' }, { name: 'ctx' });
+  assert.deepEqual(queueCalls, [
+    [{ id: 1 }, 'env', 'ctx'],
+    [{ id: 2 }, 'env', 'ctx'],
+  ]);
 
   const wrapped = withAssets(app);
   assert.equal(typeof wrapped.scheduled, 'function');
+  assert.equal(typeof wrapped.queue, 'function');
 }
 
 async function testJsx() {

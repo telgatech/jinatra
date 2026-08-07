@@ -13,6 +13,7 @@ export class Jinatra {
     this.errorHandler = null;
     this.staticOptions = null;
     this.cronHandlers = new Map();
+    this.queueHandlers = new Map();
     this.sessionOptions = normalizeSessionOptions(options.session);
     this.fetch = this.fetch.bind(this);
   }
@@ -63,6 +64,17 @@ export class Jinatra {
     return this;
   }
 
+  /** Register a Cloudflare Queue consumer handler for a queue name. Handlers receive each batch message. */
+  queue(name, ...handlers) {
+    if (typeof name !== 'string' || !name.trim()) {
+      throw new TypeError('queue name must be a non-empty string');
+    }
+    assertHandlers(handlers, `queue ${name}`);
+    const key = name.trim();
+    this.queueHandlers.set(key, [...(this.queueHandlers.get(key) ?? []), ...handlers]);
+    return this;
+  }
+
   /** Build the object Cloudflare Workers expects as its module export. */
   worker() {
     const worker = { fetch: this.fetch };
@@ -76,6 +88,16 @@ export class Jinatra {
           : this.cronHandlers.get(expression);
         if (!handlers) return undefined;
         for (const handler of handlers) await handler(controller, env, ctx);
+      };
+    }
+    if (this.queueHandlers.size > 0) {
+      worker.queue = async (batch, env, ctx) => {
+        const name = typeof batch?.queue === 'string' ? batch.queue.trim() : batch?.queue;
+        const handlers = this.queueHandlers.get(name);
+        if (!handlers) return undefined;
+        for (const message of batch?.messages ?? []) {
+          for (const handler of handlers) await handler(message, env, ctx);
+        }
       };
     }
     return worker;
