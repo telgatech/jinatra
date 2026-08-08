@@ -25,18 +25,74 @@ app.get('/search', (c) => ({
 ## Context methods
 
 ```js
-c.param('id')       // one route parameter
-c.param('id', 'new') // parameter with fallback
-c.param()           // all route parameters
-c.query('page')     // one query value
-c.query()           // all query values
-c.queries('tag')    // repeated query values
-c.header('accept')
-c.cookie('theme')
-await c.body()
-await c.jsonBody()
-await c.form()
+c.param('id')                    // route parameter, or null
+c.param('id', 'new')             // route parameter with fallback
+c.param()                        // all route parameters
+c.query('page')                  // one query value
+c.query()                        // all query values
+c.queries('tag')                 // repeated query values
+c.header('accept')               // one request header
+c.header()                       // all request headers
+c.cookie('theme')                // one cookie
+c.cookie()                       // all cookies
+await c.body()                   // JSON, form data, or text by content type
+await c.jsonBody()               // always parse JSON
+await c.form()                   // parse form data into an object
+c.json(data, status?, headers?)  // explicit JSON response
+c.html(value, status?, headers?) // HTML response
+c.text(value, status?, headers?) // text response
+c.redirect(location, status?)   // redirect response
+c.status(code?)                 // get or set response status
+c.waitUntil(promise)             // schedule background work
+
+c.accept                         // accepted media types
+c.accepts('text/html')           // content negotiation check
+c.preferredType(types)           // best matching media type
+c.url                           // URL('https://example.com/users/42?page=2')
+c.path                          // '/users/42'
+c.pathInfo                      // '/users/42' (pathname alias)
+c.queryString                   // 'page=2'
+c.scheme                        // 'https'
+c.scriptName                    // mounted script prefix
+c.host                          // hostname
+c.hostWithPort                  // hostname and port
+c.port                          // numeric port
+c.requestMethod                 // HTTP method
+c.method                        // HTTP method alias
+c.contentLength                 // Content-Length, or null
+c.referrer                      // Referer header, or /
+c.userAgent                     // User-Agent header
+c.headers                       // all request headers
+c.cookies                       // all request cookies
+c.ip                            // client IP from proxy headers
+c.secure                        // HTTPS flag
+c.forwarded                     // forwarded request flag
+c.xhr                           // XMLHttpRequest flag
+c.formData                      // form content-type flag
 ```
+
+Request inspection properties and methods are available directly on the context:
+
+| Helper | Description |
+| --- | --- |
+| `c.accept` | Ordered accepted media types |
+| `c.accepts(type)` | Whether the client accepts a media type |
+| `c.preferredType(types)` | Best matching type from the supplied choices |
+| `c.scheme` | `http` or `https` |
+| `c.scriptName` | Mounted script prefix, or an empty string |
+| `c.path`, `c.pathInfo` | Request pathname |
+| `c.url` | Parsed request `URL` |
+| `c.host`, `c.hostWithPort`, `c.port` | Host and port information |
+| `c.requestMethod`, `c.method` | HTTP method |
+| `c.queryString` | Raw query string without `?` |
+| `c.contentLength` | Parsed `Content-Length`, or `null` |
+| `c.mediaType` | Request media type without parameters |
+| `c.referrer`, `c.referer` | Referring URL, or `/` when absent |
+| `c.userAgent` | User-agent header |
+| `c.headers`, `c.cookies` | Header and cookie objects |
+| `c.ip` | Client IP from common proxy headers |
+| `c.secure`, `c.forwarded`, `c.xhr` | HTTPS, proxy, and XMLHttpRequest flags |
+| `c.formData` | Whether the content type is form data |
 
 The body parser selects JSON, form data, or text from the request content type. `c.jsonBody()` always parses JSON, while `c.form()` always parses form data.
 
@@ -65,9 +121,8 @@ The facade includes:
 - `requestMethod`, `contentLength`, `mediaType`, `referrer`, `userAgent`
 - `params`, `query`, `cookies`, `headers`, `env`, and bracket parameter access
 - `ip`, `secure`, `forwarded`, `xhr`, and `formData` booleans
-- `get`, `post`, `put`, `patch`, `delete`, `options`, and `head` method flags
 
-The JavaScript spellings replace Sinatra's question-mark methods: use `request.get`, `request.secure`, and `request.xhr` on the global facade, or `c.get`, `c.secure`, and `c.xhr` on the context. `c.body()` remains the context body helper. The global `request()` call remains available when you need the raw Fetch `Request` object.
+The global `request` helper mirrors these inspection properties and methods, and additionally supports bracket access to route parameters such as `request['id']`. Its `request.body` property is asynchronous; use `await request.body`. The global `request()` call remains available when you need the raw Fetch `Request` object.
 
 ## JSON request bodies
 

@@ -38,7 +38,7 @@ Methods:
 
 ### `Context`
 
-Handlers receive a context with `req`, `request`, `env`, `executionCtx`, `url`, `params`, `state`, and the request methods described in [Request context](/guide/request-context). `c.request` is the compact request facade.
+Handlers receive a context with `req`, `env`, `executionCtx`, `url`, `params`, `state`, and the request properties and methods described in [Request context](/guide/request-context).
 
 ## Request helpers
 

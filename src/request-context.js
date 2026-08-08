@@ -35,7 +35,7 @@ export function currentContext() {
   return context;
 }
 
-/** Build a Sinatra-inspired request facade for the current context. */
+/** Build a compact request facade for the current context. */
 export function createRequestFacade(context) {
   const facade = new RequestFacade(context);
   return new Proxy(facade, {
@@ -58,7 +58,7 @@ export function installRequestHelpers(context) {
     'accept', 'accepts', 'preferredType', 'scheme', 'scriptName', 'pathInfo', 'port',
     'requestMethod', 'method', 'queryString', 'contentLength', 'mediaType', 'host',
     'hostWithPort', 'referrer', 'referer', 'userAgent', 'cookies', 'headers', 'xhr',
-    'path', 'ip', 'secure', 'forwarded', 'formData', 'rawFormData', 'get', 'post',
+    'path', 'ip', 'secure', 'forwarded', 'formData', 'get', 'post',
     'put', 'patch', 'delete', 'options', 'head',
   ]) {
     Object.defineProperty(context, key, {
@@ -93,7 +93,6 @@ class RequestFacade {
   get body() { return this.context.body(); }
   json() { return this.context.jsonBody(); }
   form() { return this.context.form(); }
-  rawFormData() { return this.req.formData(); }
 
   get scheme() { return this.urlObject.protocol.replace(':', ''); }
   get scriptName() { return this.context.scriptName ?? ''; }
