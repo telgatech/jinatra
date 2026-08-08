@@ -26,6 +26,7 @@ app.get('/search', (c) => ({
 
 ```js
 c.param('id')       // one route parameter
+c.param('id', 'new') // parameter with fallback
 c.param()           // all route parameters
 c.query('page')     // one query value
 c.query()           // all query values
@@ -38,6 +39,35 @@ await c.form()
 ```
 
 The body parser selects JSON, form data, or text from the request content type. `c.jsonBody()` always parses JSON, while `c.form()` always parses form data.
+
+## Request facade
+
+For a compact, request-centric API, use the context directly (or the global `request` helper):
+
+```js
+app.get('/inspect/:id', (c) => ({
+  acceptsHtml: c.accepts('text/html'),
+  preferredType: c.preferredType(['application/json', 'text/html']),
+  method: c.requestMethod,
+  path: c.path,
+  id: c.params.id,
+  ip: c.ip,
+  secure: c.secure,
+}))
+```
+
+The facade includes:
+
+- `accept` — ordered accepted media types
+- `accepts(type)` and `preferredType(types)` — content negotiation
+- `body` — a promise for the parsed request body
+- `scheme`, `host`, `port`, `path`, `pathInfo`, `url`, `queryString`
+- `requestMethod`, `contentLength`, `mediaType`, `referrer`, `userAgent`
+- `params`, `query`, `cookies`, `headers`, `env`, and bracket parameter access
+- `ip`, `secure`, `forwarded`, `xhr`, and `formData` booleans
+- `get`, `post`, `put`, `patch`, `delete`, `options`, and `head` method flags
+
+The JavaScript spellings replace Sinatra's question-mark methods: use `request.get`, `request.secure`, and `request.xhr` on the global facade, or `c.get`, `c.secure`, and `c.xhr` on the context. `c.body()` remains the context body helper. The global `request()` call remains available when you need the raw Fetch `Request` object.
 
 ## JSON request bodies
 

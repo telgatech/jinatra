@@ -20,12 +20,21 @@ Use `:name` for a single path segment and `*` for a wildcard:
 ```js
 app.get('/posts/:id', (c) => ({ id: c.param('id') }))
 app.get('/files/*', (c) => c.param('wildcard'))
+app.get('/optional', (c) => c.param('name', 'anonymous'))
+```
+
+A missing named parameter returns `null` by default. Pass a second argument to provide a fallback:
+
+```js
+c.param('name', 'anonymous')
 ```
 
 The `params` helper provides the same values without passing a context around:
 
 ```js
-app.get('/users/:id', () => ({ id: params.id }))
+app.get('/users/:id', () => ({
+  id: params('id', 'unknown'),
+}))
 ```
 
 Paths may end with an optional trailing slash. Parameters are URL-decoded and invalid encoded parameters return a `400` response.

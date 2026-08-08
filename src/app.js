@@ -1,4 +1,4 @@
-import { runWithContext } from './request-context.js';
+import { installRequestHelpers, runWithContext } from './request-context.js';
 import { html, json, text, redirect, normalizeResponse, HTTPError } from './response.js';
 import { normalizeStaticOptions } from './adapters-common.js';
 
@@ -235,14 +235,16 @@ export class Context {
     this.executionCtx = executionCtx;
     this.url = url;
     this.params = params;
+    this.scriptName = '';
     this.state = Object.create(null);
+    installRequestHelpers(this);
     this.responseStatus = undefined;
     this.session = sessionOptions ? new CookieSession(request, sessionOptions) : null;
     this.renderView = typeof executionCtx?.renderView === 'function' ? executionCtx.renderView : null;
   }
 
-  param(name) {
-    return name === undefined ? { ...this.params } : this.params[name];
+  param(name, defaultValue = null) {
+    return name === undefined ? { ...this.params } : (this.params[name] ?? defaultValue);
   }
 
   query(name) {

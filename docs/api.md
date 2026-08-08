@@ -38,7 +38,7 @@ Methods:
 
 ### `Context`
 
-Handlers receive a context with `req`, `env`, `executionCtx`, `url`, `params`, `state`, and the request methods described in [Request context](/guide/request-context).
+Handlers receive a context with `req`, `request`, `env`, `executionCtx`, `url`, `params`, `state`, and the request methods described in [Request context](/guide/request-context). `c.request` is the compact request facade.
 
 ## Request helpers
 
@@ -78,7 +78,7 @@ Property access and calls are both supported for parameter, query, header, and c
 | `jinatra/bun` | `serve()` and `listen()` for Bun |
 | `jinatra/node` | `serve()` and `listen()` for Node |
 | `jinatra/cloudflare` | `withAssets()` for Workers Static Assets |
-
-`worker()` always includes `fetch` and adds `scheduled` and/or `queue` only when the app has registered corresponding handlers.
 | `jinatra/jsx-runtime` | Automatic JSX runtime |
 | `jinatra/jsx-dev-runtime` | Development JSX runtime |
+
+`worker()` always includes `fetch` and adds `scheduled` and/or `queue` only when the app has registered corresponding handlers.

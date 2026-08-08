@@ -50,9 +50,9 @@ app.post('/users', async () => {
 });
 ```
 
-Methods are `get`, `post`, `put`, `patch`, `delete`, `any` (and the alias `all`). Parameters are available as `params.id` or `params('id')`. The other request helpers are `query`, `body`, `form`, `json`, `headers`, and `cookies`. Response helpers are `status`, `redirect`, `html`, `text`, and `json`.
+Methods are `get`, `post`, `put`, `patch`, `delete`, `any` (and the alias `all`). Parameters are available as `params.id` or `params('id')`; `c.param('id', 'fallback')` accepts a default and missing values return `null`. The other request helpers are `query`, `body`, `form`, `json`, `headers`, and `cookies`. Response helpers are `status`, `redirect`, `html`, `text`, and `json`.
 
-Handlers may also receive the request context as their first argument (`c.req`, `c.url`, `c.state`, and the equivalent context methods remain available).
+Handlers may also receive the request context as their first argument (`c.req`, `c.url`, `c.state`, and the equivalent context methods remain available). The context itself provides a compact request surface with `accept`, `preferredType()`, `path`, `ip`, `secure`, and method flags; the global `request` helper also supports bracket access to route parameters.
 
 ## Middleware, errors, and static files
 

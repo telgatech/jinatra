@@ -6,13 +6,14 @@ import { join } from 'node:path';
 
 import { Jinatra } from './src/index.js';
 import { Fragment, jsx, jsxs, render } from './src/jsx/render.js';
-import { params, query, json, redirect } from './src/index.js';
+import { params, query, json, redirect, request } from './src/index.js';
 import { withAssets } from './src/adapters/cloudflare.js';
 import { serve as serveNode } from './src/adapters/node.js';
 import { serve as serveBun } from './src/adapters/bun.js';
 
 const tests = [
   ['routing and context APIs', testRoutingAndContext],
+  ['request facade helpers', testRequestFacade],
   ['hooks and response normalization', testHooksAndResponses],
   ['errors and 404 handling', testErrors],
   ['cookie sessions and flash messages', testSessions],
@@ -80,6 +81,83 @@ async function testRoutingAndContext() {
   assert.equal((await app.fetch(new Request('https://example.test/redirect'))).status, 302);
   assert.equal((await app.fetch(new Request('https://example.test/all', { method: 'PATCH' }))).status, 200);
   assert.equal((await app.fetch(new Request('https://example.test/head', { method: 'HEAD' }))).status, 200);
+}
+
+async function testRequestFacade() {
+  const app = new Jinatra();
+  app.get('/request/:id', (c) => ({
+    accept: c.accept,
+    acceptsHtml: c.accepts('text/html'),
+    preferredType: c.preferredType(['application/json', 'text/html']),
+    scheme: c.scheme,
+    pathInfo: c.pathInfo,
+    port: c.port,
+    requestMethod: c.requestMethod,
+    queryString: c.queryString,
+    mediaType: c.mediaType,
+    host: c.host,
+    get: c.get,
+    param: c.params.id,
+    missingParam: c.param('missing'),
+    defaultParam: c.param('missing', 'fallback'),
+    referrer: c.referrer,
+    userAgent: c.userAgent,
+    cookies: c.cookies,
+    xhr: c.xhr,
+    url: c.url.href,
+    path: c.path,
+    ip: c.ip,
+    secure: c.secure,
+    forwarded: c.forwarded,
+    globalMethod: request.method,
+    rawRequest: request() instanceof Request,
+  }));
+  app.post('/request-body', async (c) => ({ body: await c.body() }));
+
+  const response = await app.fetch(new Request('https://example.test/request/42?x=1', {
+    headers: {
+      accept: 'text/html, */*',
+      referer: 'https://referrer.test/',
+      'user-agent': 'test-agent',
+      cookie: 'theme=dark',
+      'x-requested-with': 'XMLHttpRequest',
+      'x-forwarded-for': '203.0.113.10',
+    },
+  }));
+  assert.deepEqual(await response.json(), {
+    accept: ['text/html', '*/*'],
+    acceptsHtml: true,
+    preferredType: 'text/html',
+    scheme: 'https',
+    pathInfo: '/request/42',
+    port: 443,
+    requestMethod: 'GET',
+    queryString: 'x=1',
+    mediaType: '',
+    host: 'example.test',
+    get: true,
+    param: '42',
+    missingParam: null,
+    defaultParam: 'fallback',
+    referrer: 'https://referrer.test/',
+    userAgent: 'test-agent',
+    cookies: { theme: 'dark' },
+    xhr: true,
+    url: 'https://example.test/request/42?x=1',
+    path: '/request/42',
+    ip: '203.0.113.10',
+    secure: true,
+    forwarded: true,
+    globalMethod: 'GET',
+    rawRequest: true,
+  });
+
+  const body = await app.fetch(new Request('https://example.test/request-body', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ ok: true }),
+  }));
+  assert.deepEqual(await body.json(), { body: { ok: true } });
 }
 
 async function testHooksAndResponses() {
