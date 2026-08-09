@@ -13,6 +13,7 @@ import { serve as serveBun } from './src/adapters/bun.js';
 
 const tests = [
   ['routing and context APIs', testRoutingAndContext],
+  ['mounted subapps', testMountedSubapps],
   ['request facade helpers', testRequestFacade],
   ['hooks and response normalization', testHooksAndResponses],
   ['errors and 404 handling', testErrors],
@@ -81,6 +82,29 @@ async function testRoutingAndContext() {
   assert.equal((await app.fetch(new Request('https://example.test/redirect'))).status, 302);
   assert.equal((await app.fetch(new Request('https://example.test/all', { method: 'PATCH' }))).status, 200);
   assert.equal((await app.fetch(new Request('https://example.test/head', { method: 'HEAD' }))).status, 200);
+}
+
+async function testMountedSubapps() {
+  const api = new Jinatra();
+  api.get('/', (c) => ({ path: c.url.pathname }));
+  api.get('/users/:id', (c) => ({ id: c.param('id') }));
+  api.post('/echo', async (c) => c.body());
+
+  const app = new Jinatra();
+  assert.equal(app.mount('/api', api), app);
+
+  const root = await app.fetch(new Request('https://example.test/api'));
+  assert.deepEqual(await root.json(), { path: '/' });
+
+  const user = await app.fetch(new Request('https://example.test/api/users/42'));
+  assert.deepEqual(await user.json(), { id: '42' });
+
+  const echo = await app.fetch(new Request('https://example.test/api/echo', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ mounted: true }),
+  }));
+  assert.deepEqual(await echo.json(), { mounted: true });
 }
 
 async function testRequestFacade() {

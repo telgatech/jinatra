@@ -57,6 +57,20 @@ app.get('/admin', requireAuth, () => 'dashboard')
 
 You can also register application-wide `before()` and `after()` handlers. See [Middleware & errors](/guide/middleware).
 
+## Mount subapps
+
+Mount another Fetch-compatible Jinatra app below a path prefix. The subapp receives a rewritten URL, so its routes remain prefix-free:
+
+```js
+const api = new Jinatra()
+api.get('/users/:id', (c) => ({ id: c.param('id') }))
+
+const app = new Jinatra()
+app.mount('/api', api)
+```
+
+`/api/users/42` is handled by the subapp as `/users/42`. The mount also handles the prefix root (`/api` → `/`) and preserves the request method, body, query string, environment, and execution context.
+
 ## HEAD behavior
 
 If a `HEAD` route is not registered, Jinatra uses the matching `GET` route and returns the response without a body in the runtime adapter.

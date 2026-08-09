@@ -37,8 +37,8 @@ bun run server.js
 
 Open `http://localhost:3000` in your browser.
 
-::: tip Global route verbs
-Importing `jinatra` installs the default app's route verbs (`get`, `post`, `put`, and so on) and request helpers on `globalThis`. They can be used without importing each one. Explicit named imports are also supported when you prefer them.
+::: tip The default app and global helpers
+`app` is Jinatra's default singleton app. Importing `jinatra` installs that app's route verbs (`get`, `post`, `put`, and so on) and request helpers on `globalThis`, so they can be used without importing each one. Pass the same `app` to your runtime adapter. For isolated apps, create `new Jinatra()` and use its methods directly instead.
 :::
 
 ## Use an explicit app

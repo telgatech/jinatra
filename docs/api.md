@@ -28,6 +28,7 @@ Methods:
 - `notFound(handler)`
 - `onError(handler)`
 - `static(directory, options?)`
+- `mount(prefix, subapp)`
 - `session(options)`
 - `cron(expression, ...handlers)`
 - `queue(name, ...handlers)`

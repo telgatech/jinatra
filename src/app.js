@@ -110,6 +110,22 @@ export class Jinatra {
     return this;
   }
 
+  /** Mount another Fetch-compatible app below a path prefix. */
+  mount(prefix, subapp) {
+    const path = normalizeMountPath(prefix);
+    if (!subapp || typeof subapp.fetch !== 'function') {
+      throw new TypeError('mount() expects a Fetch-compatible subapp');
+    }
+    const handler = (context) => subapp.fetch(
+      rewriteMountedRequest(context.req, path),
+      context.env,
+      context.executionCtx,
+    );
+    this.any(path, handler);
+    if (path !== '/') this.any(`${path}/*`, handler);
+    return this;
+  }
+
   get(path, ...handlers) { return this.route('GET', path, ...handlers); }
   post(path, ...handlers) { return this.route('POST', path, ...handlers); }
   put(path, ...handlers) { return this.route('PUT', path, ...handlers); }
@@ -341,6 +357,23 @@ async function runAfterHandlers(handlers, context, response) {
     if (result instanceof Response) response = result;
   }
   return response;
+}
+
+function normalizeMountPath(path) {
+  if (typeof path !== 'string' || !path.startsWith('/')) {
+    throw new TypeError('Mount path must begin with "/"');
+  }
+  const normalized = path.replace(/\/+$/, '');
+  return normalized || '/';
+}
+
+function rewriteMountedRequest(request, prefix) {
+  if (prefix === '/') return request;
+  const url = new URL(request.url);
+  let pathname = url.pathname.slice(prefix.length) || '/';
+  if (!pathname.startsWith('/')) pathname = `/${pathname}`;
+  url.pathname = pathname;
+  return new Request(url, request);
 }
 
 function compilePath(path) {
